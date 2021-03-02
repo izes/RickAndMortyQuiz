@@ -7,134 +7,131 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.example.android.rickmortyquiz.R
 
 class GameViewModel : ViewModel() {
 
-    private val timer: CountDownTimer
+    data class Question (
+        val resId: Int,
+        val correctAnswer: Boolean,
+        var userAnswer:Boolean? = null
+    )
 
-    companion object {
-
-        // Time when the game is over
-        private const val DONE = 0L
-
-        // Countdown time interval
-        private const val ONE_SECOND = 1000L
-
-        // Total time for the game
-        private const val COUNTDOWN_TIME = 60000L
-
-    }
-
-    // The current word
-    private val _word = MutableLiveData<String>()
-    val word: LiveData<String>
-        get() = _word
+    val questionBank = mutableListOf(
+        Question(R.string.question_1, false),
+        Question(R.string.question_2, true),
+        Question(R.string.question_3, true)
+)
+    // The current question
+    private val _question = MutableLiveData<Int>()
+    val question: LiveData<Int>
+        get() = _question
 
     // The current score
     private val _score = MutableLiveData<Int>()
     val score: LiveData<Int>
         get() = _score
 
-    // Countdown time
-    private val _currentTime = MutableLiveData<Long>()
-    val currentTime: LiveData<Long>
-        get() = _currentTime
+    private var qIndex = 0
 
-    // The String version of the current time
-    val currentTimeString = Transformations.map(currentTime) { time ->
-        DateUtils.formatElapsedTime(time)
-    }
 
     // Event which triggers the end of the game
     private val _eventGameFinish = MutableLiveData<Boolean>()
     val eventGameFinish: LiveData<Boolean>
         get() = _eventGameFinish
 
-    // The list of words - the front of the list is the next word to guess
-    private lateinit var wordList: MutableList<String>
+    private val _showCheck = MutableLiveData<Boolean>()
+    val showCheck: LiveData<Boolean>
+        get() = _showCheck
 
-    /**
-     * Resets the list of words and randomizes the order
-     */
-    private fun resetList() {
-        wordList = mutableListOf(
-                "queen",
-                "hospital",
-                "basketball",
-                "cat",
-                "change",
-                "snail",
-                "soup",
-                "calendar",
-                "sad",
-                "desk",
-                "guitar",
-                "home",
-                "railway",
-                "zebra",
-                "jelly",
-                "car",
-                "crow",
-                "trade",
-                "bag",
-                "roll",
-                "bubble"
-        )
-        wordList.shuffle()
-    }
+    private val _showX = MutableLiveData<Boolean>()
+    val showX: LiveData<Boolean>
+        get() = _showX
+
+    private val _enableRadio = MutableLiveData<Boolean>()
+    val enableRadio: LiveData<Boolean>
+        get() = _enableRadio
+
+    private val _selectedTrue = MutableLiveData<Boolean>()
+    val selectedTrue: LiveData<Boolean>
+        get() = _selectedTrue
+
+    private val _selectedFalse = MutableLiveData<Boolean>()
+    val selectedFalse: LiveData<Boolean>
+        get() = _selectedFalse
+
+
 
     init {
-        _word.value = ""
+        _question.value = questionBank[0].resId
         _score.value = 0
-        resetList()
-        nextWord()
-        Log.i("GameViewModel", "GameViewModel created!")
+        questionBank.shuffle()
+        qIndex = 0
+        _showX.value = false
+        _showCheck.value = false
+        _enableRadio.value = true
+        _selectedFalse.value = false
+        _selectedTrue.value = false
 
-        // Creates a timer which triggers the end of the game when it finishes
-        timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
+    }
 
-            override fun onTick(millisUntilFinished: Long)
-            {
-                _currentTime.value = millisUntilFinished/ONE_SECOND
-            }
+    fun onTapAnswer(answer:Boolean) {
+        val q = questionBank[qIndex]
+        q.userAnswer = answer
+        _showCheck.value = q.correctAnswer == answer
+        _showX.value = q.correctAnswer != answer
+        _enableRadio.value = false
+        if (answer == q.correctAnswer) {
+            _score.value = _score.value?.plus(1)
+        }
 
-            override fun onFinish() {
-                _currentTime.value = DONE
-                onGameFinish()
+        var done = true
+
+        for (q in questionBank) {
+            if (q.userAnswer == null) {
+                done = false
+                break
             }
         }
 
-        timer.start()
+        if (done) {
+            onGameFinish()
+        }
+
     }
 
-    /**
-     * Moves to the next word in the list
-     */
-    private fun nextWord() {
-        // Shuffle the word list, if the list is empty
-        if (wordList.isEmpty()) {
-            resetList()
+    fun next() {
+        if (qIndex == questionBank.size - 1) {
+            qIndex = 0
         } else {
-            // Remove a word from the list
-            _word.value = wordList.removeAt(0)
+            qIndex ++
         }
+        updateVars()
+
     }
 
-    /** Methods for buttons presses **/
-    fun onCorrect() {
-        _score.value = (score.value)?.plus(1)
-        nextWord()
+    fun prev() {
+        if (qIndex == 0) {
+            qIndex = questionBank.size - 1
+        } else {
+            qIndex --
+        }
+        updateVars()
     }
 
-    fun onSkip() {
-        _score.value = (score.value)?.minus(1)
-        nextWord()
-    }
 
-    override fun onCleared() {
-        super.onCleared()
-        // Cancel the timer
-        timer.cancel()
+    fun updateVars() {
+        _question.value = questionBank[qIndex].resId
+        _enableRadio.value = questionBank[qIndex].userAnswer == null
+        _showCheck.value = false
+        _showX.value = false
+        if( questionBank[qIndex].userAnswer != null) {
+            _selectedTrue.value = questionBank[qIndex].userAnswer == true
+            _selectedFalse.value = questionBank[qIndex].userAnswer == false
+        } else {
+            _selectedTrue.value = false
+            _selectedFalse.value = false
+        }
     }
 
     /** Method for the game completed event **/

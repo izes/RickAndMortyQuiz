@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/title_destination"
         android:name="com.example.android.rickmortyquiz.screens.title.TitleFragment"
-        android:label="title_fragment"
+        android:label="Rick and Morty"
         tools:layout="@layout/title_fragment">
         <action
             android:id="@+id/action_title_to_game"
@@ -36,7 +36,7 @@
     <fragment
         android:id="@+id/game_destination"
         android:name="com.example.android.rickmortyquiz.screens.game.GameFragment"
-        android:label="game_fragment"
+        android:label="Quiz Time"
         tools:layout="@layout/game_fragment">
         <action
             android:id="@+id/action_game_to_score"
@@ -51,7 +51,7 @@
     <fragment
         android:id="@+id/score_destination"
         android:name="com.example.android.rickmortyquiz.screens.score.ScoreFragment"
-        android:label="score_fragment"
+        android:label="Game Over"
         tools:layout="@layout/score_fragment">
         <action
             android:id="@+id/action_restart"
@@ -66,4 +66,14 @@
             android:defaultValue="0"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.android.rickmortyquiz.AboutFragment"
+        android:label="About Rick and Morty"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/rulesFragment"
+        android:name="com.example.android.rickmortyquiz.RulesFragment"
+        android:label="The Rules"
+        tools:layout="@layout/fragment_rules" />
 </navigation>

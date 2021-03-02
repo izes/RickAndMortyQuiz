@@ -18,15 +18,39 @@ package com.example.android.rickmortyquiz
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
+import com.example.android.rickmortyquiz.databinding.MainActivityBinding
+import com.example.android.rickmortyquiz.databinding.TitleFragmentBinding
+import com.example.android.rickmortyquiz.screens.title.TitleFragment
 
 /**
  * Creates an Activity that hosts all of the fragments in the app
  */
+private lateinit var drawerLayout: DrawerLayout
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
+
+        val binding = DataBindingUtil.setContentView<MainActivityBinding>(this,
+                R.layout.main_activity)
+        val navController = this.findNavController(R.id.nav_host_fragment)
+
+
+        drawerLayout = binding.drawerLayout
+        NavigationUI.setupActionBarWithNavController(this,navController)
+        NavigationUI.setupWithNavController(binding.navView, navController)
+        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = this.findNavController(R.id.nav_host_fragment)
+        return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
 }
