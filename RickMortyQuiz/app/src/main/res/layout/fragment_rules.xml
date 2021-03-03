@@ -16,6 +16,7 @@
     <ImageView
         android:id="@+id/ruleImage"
         android:layout_width="fill_parent"
+        android:scaleType="centerCrop"
         android:layout_height="250dp"
         android:src="@drawable/rnm03" />
 
@@ -26,7 +27,7 @@
             android:layout_margin="@dimen/margin"
             android:text="@string/rulestext"
             android:textColor="@color/colorAccent"
-            android:textSize="25dp"
+            android:textSize="@dimen/textsize"
             android:textStyle="bold" />
 
     </LinearLayout>

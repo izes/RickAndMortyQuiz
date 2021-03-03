@@ -18,6 +18,7 @@
         android:id="@+id/aboutHeader"
         android:layout_width="match_parent"
         android:layout_height="130dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/nav_header"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +31,7 @@
             android:layout_margin="@dimen/margin"
             android:text="@string/abouttext"
             android:textColor="@color/colorAccent"
-            android:textSize="25dp"
+            android:textSize="@dimen/textsize"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
 
